@@ -76,48 +76,59 @@ func (c *Collector) CollectMemory() (GuestMetric, error) {
 }
 
 func enumNetworkAddresses(iface string) (GuestMetric, error) {
-	const (
-		IP_RE   string = `(\d{1,3}\.){3}\d{1,3}`
-		IPV6_RE string = `[\da-f:]+[\da-f]`
-	)
-
-	var (
-		IP_IPV4_ADDR_RE       = regexp.MustCompile(`inet\s*(` + IP_RE + `).*\se[a-zA-Z0-9]+[\s\n]`)
-		IP_IPV6_ADDR_RE       = regexp.MustCompile(`inet6\s*(` + IPV6_RE + `)`)
-		IFCONFIG_IPV4_ADDR_RE = regexp.MustCompile(`inet addr:\s*(` + IP_RE + `)`)
-		IFCONFIG_IPV6_ADDR_RE = regexp.MustCompile(`inet6 addr:\s*(` + IPV6_RE + `)`)
-	)
-
 	d := make(GuestMetric, 0)
 
-	var v4re, v6re *regexp.Regexp
-	var out string
 	var err error
-	if out, err = runCmd("ip", "addr", "show", iface); err == nil {
-		v4re = IP_IPV4_ADDR_RE
-		v6re = IP_IPV6_ADDR_RE
-	} else if out, err = runCmd("ifconfig", iface); err == nil {
-		v4re = IFCONFIG_IPV4_ADDR_RE
-		v6re = IFCONFIG_IPV6_ADDR_RE
-	} else {
-		return nil, fmt.Errorf("Cannot find ip/ifconfig command")
+	var iface2 *net.Interface
+	iface2, err = net.InterfaceByName(iface)
+	println(iface2.Addrs())
+	var (
+		ief      *net.Interface
+		addrs    []net.Addr
+		ipv4Addr net.IP
+	)
+	if ief, err = net.InterfaceByName(iface); err != nil { // get interface
+		return nil, nil
+	}
+	if addrs, err = ief.Addrs(); err != nil { // get addresses
+		return nil, nil
+	}
+	for _, addr := range addrs { // get ipv4 address
+		if ipv4Addr = addr.(*net.IPNet).IP.To4(); ipv4Addr != nil {
+			break
+		}
 	}
 
-	m := v4re.FindAllStringSubmatch(out, -1)
-	if m != nil {
-		for i, parts := range m {
-			d[fmt.Sprintf("ipv4/%d", i)] = parts[1]
-		}
+	if ipv4Addr == nil {
+		return nil, fmt.Errorf("PAUPER geen ipv4 adress")
 	}
-	m = v6re.FindAllStringSubmatch(out, -1)
-	if m != nil {
-		for i, parts := range m {
-			d[fmt.Sprintf("ipv6/%d", i)] = parts[1]
-		}
-	}
+	d[fmt.Sprintf("ipv4/0")] = ipv4Addr.String()
 
 	return d, nil
 }
+
+func GetInterfaceIpv4Addr(interfaceName string) (addr string, err error) {
+	var (
+		ief      *net.Interface
+		addrs    []net.Addr
+		ipv4Addr net.IP
+	)
+	if ief, err = net.InterfaceByName(interfaceName); err != nil { // get interface
+		return
+	}
+	if addrs, err = ief.Addrs(); err != nil { // get addresses
+		return
+	}
+	for _, addr := range addrs { // get ipv4 address
+		if ipv4Addr = addr.(*net.IPNet).IP.To4(); ipv4Addr != nil {
+			break
+		}
+	}
+	if ipv4Addr == nil {
+		return "", errors.New(fmt.Sprintf("interface %s don't have an ipv4 address\n", interfaceName))
+	}
+	return ipv4Addr.String(), nil
+
 
 func getPlainVifId(path string) (string, error) {
 	nodenamePath := fmt.Sprintf("%s/device/nodename", path)
