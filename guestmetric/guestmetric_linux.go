@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -128,7 +129,7 @@ func GetInterfaceIpv4Addr(interfaceName string) (addr string, err error) {
 		return "", errors.New(fmt.Sprintf("interface %s don't have an ipv4 address\n", interfaceName))
 	}
 	return ipv4Addr.String(), nil
-
+}
 
 func getPlainVifId(path string) (string, error) {
 	nodenamePath := fmt.Sprintf("%s/device/nodename", path)
