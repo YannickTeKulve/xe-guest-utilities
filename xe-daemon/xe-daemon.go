@@ -27,7 +27,7 @@ const (
 
 func main() {
 	var err error
-
+	fmt.Println("Hij start!")
 	sleepInterval := flag.Int("i", 60, "Interval between updates (in seconds)")
 	debugFlag := flag.Bool("d", false, "Update to log in addition to xenstore")
 	balloonFlag := flag.Bool("B", true, "Do not report that ballooning is supported")
