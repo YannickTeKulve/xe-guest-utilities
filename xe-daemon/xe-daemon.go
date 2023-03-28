@@ -44,6 +44,7 @@ func main() {
 
 	var loggerWriter io.Writer = os.Stderr
 	var topic string = LoggerName
+	fmt.Fprintf(os.Stderr, "woei1", topic, err)
 	if w, err := syslog.NewSyslogWriter(topic, *debugFlag); err == nil {
 		loggerWriter = w
 		topic = ""
@@ -53,13 +54,13 @@ func main() {
 	}
 
 	logger := log.New(loggerWriter, topic, 0)
-
+	fmt.Fprintf(os.Stderr, "woei2", topic, err)
 	exitChannel := make(chan os.Signal, 1)
 	signal.Notify(exitChannel, syscall.SIGTERM, syscall.SIGINT)
 
 	resumedChannel := make(chan int)
 	go system.NotifyResumed(resumedChannel)
-
+	fmt.Fprintf(os.Stderr, "woei3", topic, err)
 	xs, err := xenstoreclient.NewCachedXenstore(0)
 	if err != nil {
 		message := fmt.Sprintf("NewCachedXenstore error: %v\n", err)
