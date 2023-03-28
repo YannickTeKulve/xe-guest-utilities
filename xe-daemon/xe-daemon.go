@@ -3,19 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	guestmetric "github.com/xenserver/xe-guest-utilities/guestmetric"
+	syslog "github.com/xenserver/xe-guest-utilities/syslog"
+	system "github.com/xenserver/xe-guest-utilities/system"
+	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/netip"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
-
-	guestmetric "github.com/xenserver/xe-guest-utilities/guestmetric"
-	syslog "github.com/xenserver/xe-guest-utilities/syslog"
-	system "github.com/xenserver/xe-guest-utilities/system"
-	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
 )
 
 const (
@@ -27,6 +27,8 @@ const (
 
 func main() {
 	var err error
+	result, _ := netip.ParseAddr("172.0.0.1")
+	fmt.Fprintf(os.Stderr, "Woex %s", result.IsValid())
 
 	sleepInterval := flag.Int("i", 60, "Interval between updates (in seconds)")
 	debugFlag := flag.Bool("d", false, "Update to log in addition to xenstore")
