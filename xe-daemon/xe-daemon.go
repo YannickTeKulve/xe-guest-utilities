@@ -43,7 +43,7 @@ func main() {
 		}
 	}
 	logje, _ := syslog2.NewLogger(syslog2.LOG_DEBUG, 0)
-	logje.Println("mooi")
+	//logje.Println("mooi")
 	var loggerWriter io.Writer = os.Stderr
 	var topic string = LoggerName
 	fmt.Fprintf(os.Stderr, "woei1", topic, err)
