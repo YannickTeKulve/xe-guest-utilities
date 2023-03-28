@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
+	"log/syslog"
 	"os"
 	"os/signal"
 	"strconv"
@@ -13,7 +13,6 @@ import (
 	"time"
 
 	guestmetric "github.com/xenserver/xe-guest-utilities/guestmetric"
-	syslog "github.com/xenserver/xe-guest-utilities/syslog"
 	system "github.com/xenserver/xe-guest-utilities/system"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
 )
@@ -44,15 +43,17 @@ func main() {
 
 	var loggerWriter io.Writer = os.Stderr
 	var topic string = LoggerName
-	if w, err := syslog.NewSyslogWriter(topic, *debugFlag); err == nil {
-		loggerWriter = w
+	if err != nil {
+		return
+	}
+	logger, err := syslog.NewLogger(syslog.LOG_DEBUG, 0)
+	if err == nil {
+		loggerWriter = nil
 		topic = ""
 	} else {
 		fmt.Fprintf(os.Stderr, "NewSyslogWriter(%s) error: %s, use stderr logging\n", topic, err)
 		topic = LoggerName + ": "
 	}
-
-	logger := log.New(loggerWriter, topic, 0)
 
 	exitChannel := make(chan os.Signal, 1)
 	signal.Notify(exitChannel, syscall.SIGTERM, syscall.SIGINT)
