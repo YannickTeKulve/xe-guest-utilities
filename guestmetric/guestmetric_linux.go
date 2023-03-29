@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
-	"net"
+	"net/netip"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -78,7 +78,8 @@ func (c *Collector) CollectMemory() (GuestMetric, error) {
 
 func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	fmt.Fprintf(os.Stderr, iface)
-	net.InterfaceByName(iface)
+	addr, _ := netip.ParseAddr("192.0.2.1")
+	fmt.Fprintf(os.Stderr, "blaat: %s", addr.String())
 	d := make(GuestMetric, 0)
 	d[fmt.Sprintf("ipv4/0")] = "10.5.124.21"
 	return d, nil
