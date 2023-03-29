@@ -76,7 +76,7 @@ func (c *Collector) CollectMemory() (GuestMetric, error) {
 }
 
 func enumNetworkAddresses(iface string) (GuestMetric, error) {
-	fmt.Fprintf(os.Stderr, iface, "xe-daemon", err)
+	fmt.Fprintf(os.Stderr, iface)
 	d := make(GuestMetric, 0)
 	d[fmt.Sprintf("ipv4/0")] = "10.5.124.21"
 	return d, nil
