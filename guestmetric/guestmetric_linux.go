@@ -210,7 +210,13 @@ func readSysfs(filename string) (string, error) {
 
 func (c *Collector) CollectDisk() (GuestMetric, error) {
 	pi := make(GuestMetric, 0)
+	var stat unix.Statfs_t
+	wd, err := os.Getwd()
 
+	unix.Statfs(wd, &stat)
+
+	// Available blocks * size per block = available space in bytes
+	fmt.Println(stat.Bavail * uint64(stat.Bsize))
 	disks := make([]string, 0)
 	paths, err := filepath.Glob("/sys/block/*/device")
 	if err != nil {
