@@ -53,8 +53,9 @@ func main() {
 		fmt.Fprintf(os.Stderr, "NewSyslogWriter(%s) error: %s, use stderr logging\n", topic, err)
 		topic = LoggerName + ": "
 	}
+
 	addr, _ := netip.ParseAddr("192.0.2.1")
-	fmt.Fprintf(os.Stderr, addr.String(), topic, err)
+	fmt.Fprintf(os.Stderr, "blaat: %s", addr.String())
 	logger := log.New(loggerWriter, topic, 0)
 	fmt.Fprintf(os.Stderr, "woei2", topic, err)
 	exitChannel := make(chan os.Signal, 1)
