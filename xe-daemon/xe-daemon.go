@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	syslog2 "log/syslog"
 	"os"
 	"os/signal"
 	"strconv"
@@ -42,8 +41,7 @@ func main() {
 			return
 		}
 	}
-	logje, _ := syslog2.NewLogger(syslog2.LOG_DEBUG, 0)
-	//logje.Println("mooi")
+
 	var loggerWriter io.Writer = os.Stderr
 	var topic string = LoggerName
 	fmt.Fprintf(os.Stderr, "woei1", topic, err)
@@ -56,7 +54,6 @@ func main() {
 	}
 
 	logger := log.New(loggerWriter, topic, 0)
-	fmt.Fprintf(os.Stderr, "woei2", topic, err)
 	exitChannel := make(chan os.Signal, 1)
 	signal.Notify(exitChannel, syscall.SIGTERM, syscall.SIGINT)
 
