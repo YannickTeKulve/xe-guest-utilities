@@ -89,21 +89,25 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 		ipv4Addr net.IP
 	)
 	if ief, err = net.InterfaceByName(iface); err != nil { // get interface
-		return nil, nil
+		return nil, fmt.Errorf("interface not found")
 	}
+
 	if addrs, err = ief.Addrs(); err != nil { // get addresses
-		return nil, nil
+		return nil, fmt.Errorf("no addresses found")
 	}
-	for _, addr := range addrs { // get ipv4 address
+
+	for i, addr := range addrs {
+
 		if ipv4Addr = addr.(*net.IPNet).IP.To4(); ipv4Addr != nil {
-			break
+			d[fmt.Sprintf("ipv4/%d", i)] = ipv4Addr.String()
 		}
 	}
 
-	if ipv4Addr == nil {
-		return nil, fmt.Errorf("PAUPER geen ipv4 adress")
+	for i, addr := range addrs {
+		if ipv6Addr = addr.(*net.IPNet).IP.To16(); ipv6Addr != nil {
+			d[fmt.Sprintf("ipv6/%d", i)] = ipv6Addr.String()
+		}
 	}
-	d[fmt.Sprintf("ipv4/0")] = ipv4Addr.String()
 
 	return d, nil
 }
