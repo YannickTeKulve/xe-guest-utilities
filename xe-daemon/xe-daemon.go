@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"strconv"
@@ -52,6 +53,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "NewSyslogWriter(%s) error: %s, use stderr logging\n", topic, err)
 		topic = LoggerName + ": "
 	}
+	net.ParseIP("192.0.2.1")
 
 	logger := log.New(loggerWriter, topic, 0)
 	fmt.Fprintf(os.Stderr, "woei2", topic, err)
