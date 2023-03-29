@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
+	"golang.org/x/sys/unix"
 	"net"
 	"os"
 	"path/filepath"
