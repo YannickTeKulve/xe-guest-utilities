@@ -54,6 +54,7 @@ func main() {
 	}
 
 	logger := log.New(loggerWriter, topic, 0)
+	fmt.Fprintf(os.Stderr, "woei2", topic, err)
 	exitChannel := make(chan os.Signal, 1)
 	signal.Notify(exitChannel, syscall.SIGTERM, syscall.SIGINT)
 
