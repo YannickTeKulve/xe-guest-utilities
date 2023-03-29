@@ -3,7 +3,7 @@ PRODUCT_MINOR_VERSION=31
 PRODUCT_MICRO_VERSION=0
 PRODUCT_VERSION = $(PRODUCT_MAJOR_VERSION).$(PRODUCT_MINOR_VERSION).$(PRODUCT_MICRO_VERSION)
 
-GO_BUILD = go build
+GO_BUILD = go build -ldflags "-linkmode 'external' -extldflags '-static'"
 GO_FLAGS = -v
 
 REPO = $(shell pwd)
