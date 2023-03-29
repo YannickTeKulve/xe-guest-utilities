@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -76,43 +77,33 @@ func (c *Collector) CollectMemory() (GuestMetric, error) {
 }
 
 func enumNetworkAddresses(iface string) (GuestMetric, error) {
-	const (
-		IP_RE   string = `(\d{1,3}\.){3}\d{1,3}`
-		IPV6_RE string = `[\da-f:]+[\da-f]`
-	)
+	var err error
 
 	var (
-		IP_IPV4_ADDR_RE       = regexp.MustCompile(`inet\s*(` + IP_RE + `).*\se[a-zA-Z0-9]+[\s\n]`)
-		IP_IPV6_ADDR_RE       = regexp.MustCompile(`inet6\s*(` + IPV6_RE + `)`)
-		IFCONFIG_IPV4_ADDR_RE = regexp.MustCompile(`inet addr:\s*(` + IP_RE + `)`)
-		IFCONFIG_IPV6_ADDR_RE = regexp.MustCompile(`inet6 addr:\s*(` + IPV6_RE + `)`)
+		ief      *net.Interface
+		addrs    []net.Addr
+		ipv4Addr net.IP
+		ipv6Addr net.IP
 	)
-
 	d := make(GuestMetric, 0)
 
-	var v4re, v6re *regexp.Regexp
-	var out string
-	var err error
-	if out, err = runCmd("ip", "addr", "show", iface); err == nil {
-		v4re = IP_IPV4_ADDR_RE
-		v6re = IP_IPV6_ADDR_RE
-	} else if out, err = runCmd("ifconfig", iface); err == nil {
-		v4re = IFCONFIG_IPV4_ADDR_RE
-		v6re = IFCONFIG_IPV6_ADDR_RE
-	} else {
-		return nil, fmt.Errorf("Cannot find ip/ifconfig command")
+	if ief, err = net.InterfaceByName(iface); err != nil { // get interface
+		return nil, fmt.Errorf("interface not found")
 	}
 
-	m := v4re.FindAllStringSubmatch(out, -1)
-	if m != nil {
-		for i, parts := range m {
-			d[fmt.Sprintf("ipv4/%d", i)] = parts[1]
+	if addrs, err = ief.Addrs(); err != nil { // get addresses
+		return nil, fmt.Errorf("no addresses found")
+	}
+
+	for i, addr := range addrs {
+		if ipv4Addr = addr.(*net.IPNet).IP.To4(); ipv4Addr != nil {
+			d[fmt.Sprintf("ipv4/%d", i)] = ipv4Addr.String()
 		}
 	}
-	m = v6re.FindAllStringSubmatch(out, -1)
-	if m != nil {
-		for i, parts := range m {
-			d[fmt.Sprintf("ipv6/%d", i)] = parts[1]
+
+	for i, addr := range addrs {
+		if ipv6Addr = addr.(*net.IPNet).IP.To16(); ipv6Addr != nil {
+			d[fmt.Sprintf("ipv6/%d", i)] = ipv6Addr.String()
 		}
 	}
 
