@@ -82,11 +82,12 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	var err error
 	var iface2 *net.Interface
 	iface2, err = net.InterfaceByName(iface)
-	println(iface2.Addrs())
+
 	var (
 		ief      *net.Interface
 		addrs    []net.Addr
 		ipv4Addr net.IP
+		ipv6Addr net.IP
 	)
 	if ief, err = net.InterfaceByName(iface); err != nil { // get interface
 		return nil, fmt.Errorf("interface not found")
@@ -97,7 +98,6 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	}
 
 	for i, addr := range addrs {
-
 		if ipv4Addr = addr.(*net.IPNet).IP.To4(); ipv4Addr != nil {
 			d[fmt.Sprintf("ipv4/%d", i)] = ipv4Addr.String()
 		}
