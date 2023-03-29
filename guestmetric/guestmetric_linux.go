@@ -95,7 +95,7 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	var out string
 	var err error
 	ip, _, _ := net.ParseCIDR("172.0.0.1/32")
-	fmt.Fprintf(os.Stderr, ip.String())
+	fmt.Sprintf(ip.String())
 
 	if out, err = runCmd("ip", "addr", "show", iface); err == nil {
 		v4re = IP_IPV4_ADDR_RE
