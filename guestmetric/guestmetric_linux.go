@@ -80,8 +80,6 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	d := make(GuestMetric, 0)
 
 	var err error
-	var iface2 *net.Interface
-	iface2, err = net.InterfaceByName(iface)
 
 	var (
 		ief      *net.Interface
