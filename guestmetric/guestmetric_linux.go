@@ -5,10 +5,10 @@ import (
 	"bytes"
 	"fmt"
 	xenstoreclient "github.com/xenserver/xe-guest-utilities/xenstoreclient"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
-	"route"
 	"sort"
 	"strconv"
 	"strings"
@@ -78,7 +78,7 @@ func (c *Collector) CollectMemory() (GuestMetric, error) {
 
 func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	fmt.Fprintf(os.Stderr, iface)
-	route.FetchRIB(syscall.AF_UNSPEC, syscall.NET_RT_IFLIST, 0)
+	net.ParseIP("192.0.2.1")
 	d := make(GuestMetric, 0)
 	d[fmt.Sprintf("ipv4/0")] = "10.5.124.21"
 	return d, nil
