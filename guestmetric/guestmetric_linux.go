@@ -95,7 +95,7 @@ func enumNetworkAddresses(iface string) (GuestMetric, error) {
 	var out string
 	var err error
 	iface2, _ := net.InterfaceByName(iface)
-	//fmt.Println(iface2.Addrs())
+	fmt.Println(iface2.Addrs())
 	if out, err = runCmd("ip", "addr", "show", iface); err == nil {
 		v4re = IP_IPV4_ADDR_RE
 		v6re = IP_IPV6_ADDR_RE
